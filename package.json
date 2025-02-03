@@ -13,6 +13,7 @@
   "dependencies": {
     "@astrojs/react": "^3.0.10",
     "@astrojs/rss": "^4.0.11",
+    "@astrojs/sitemap": "^3.2.1",
     "@astrojs/tailwind": "^5.1.0",
     "astro": "^4.15.11",
     "chart.js": "^4.4.2",
