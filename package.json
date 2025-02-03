@@ -17,6 +17,8 @@
     "@astrojs/tailwind": "^5.1.0",
     "astro": "^4.15.11",
     "chart.js": "^4.4.2",
+    "glob": "^11.0.1",
+    "gray-matter": "^4.0.3",
     "jspdf": "^2.5.1",
     "markdown-it": "^14.0.0",
     "mathjs": "^12.3.2",
