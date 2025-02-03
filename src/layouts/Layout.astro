@@ -1,0 +1,169 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  canonicalURL?: string;
+  type?: 'website' | 'article';
+}
+
+import Header from '../components/Header.astro';
+
+const { 
+  title, 
+  description = "A powerful matrix determinant calculator with step-by-step visualization. Calculate determinants for 2x2, 3x3, and 4x4 matrices.",
+  canonicalURL = Astro.url.pathname,
+  type = 'website'
+} = Astro.props;
+
+// Ensure title is not too long (60 chars max)
+const metaTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
+
+// Ensure description is not too long (160 chars max)
+const metaDescription = description.length > 160 ? description.substring(0, 157) + '...' : description;
+
+// Base URL for the site (fallback to localhost in development)
+const siteURL = Astro.site?.origin || 'http://localhost:4321';
+const fullCanonicalURL = new URL(canonicalURL, siteURL).href;
+
+// Organization schema
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Matrix Calculator",
+  "url": siteURL,
+  "logo": `${siteURL}/favicon.png`,
+  "sameAs": [
+    "https://twitter.com/matrixcalc",
+    "https://github.com/matrixcalc"
+  ]
+};
+
+// Website schema
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Matrix Calculator",
+  "url": siteURL,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${siteURL}/search?q={search_term_string}`
+    },
+    "query-input": "required name=search_term_string"
+  }
+};
+
+// Footer links
+const footerLinks = [
+  { href: '/quiz', text: 'Quiz' },
+  { href: '/guides', text: 'Guides' },
+  { href: '/blog', text: 'Blog' }
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={metaDescription} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={fullCanonicalURL} />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Matrix Calculator Blog" href="/rss.xml" />
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={metaTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={fullCanonicalURL} />
+    <meta property="og:site_name" content="Matrix Calculator" />
+    <meta property="og:image" content={`${siteURL}/social-preview.png`}>
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={metaTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:url" content={fullCanonicalURL} />
+    <meta name="twitter:creator" content="@matrixcalc">
+    
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+
+    <title>{metaTitle}</title>
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-primary-50 to-white flex flex-col">
+    <Header />
+    <main class="flex-grow">
+      <slot />
+    </main>
+    <footer class="bg-white shadow-lg mt-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+          <div class="mb-4 md:mb-0">
+            <a href="/" class="text-2xl font-bold text-primary-600 flex items-center">
+              <img src="/favicon.png" alt="Favicon" class="h-6 w-6 mr-2" />
+              Determinant Calculator
+            </a>
+          </div>
+          <nav class="flex flex-wrap justify-center gap-6">
+            {footerLinks.map(link => (
+              <a 
+                href={link.href}
+                class="text-gray-600 hover:text-primary-600 transition-colors"
+              >
+                {link.text}
+              </a>
+            ))}
+          </nav>
+        </div>
+        <div class="text-center border-t border-gray-200 pt-8">
+          <p class="text-gray-500 mb-4">
+            Brought to you by <a href="https://x.com/helloIamWilly" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700">Willy</a> and the team (Willy) at <a href="https://starterbuild.com/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700">StarterBuild</a>
+          </p>
+          <p class="text-sm text-gray-400">
+            © 2025 Determinant Calculator. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+<style is:global>
+  :root {
+    --accent: 136, 58, 234;
+    --accent-light: 224, 204, 250;
+    --accent-dark: 49, 10, 101;
+    --accent-gradient: linear-gradient(
+      45deg,
+      rgb(var(--accent)),
+      rgb(var(--accent-light)) 30%,
+      white 60%
+    );
+  }
+  html {
+    font-family: 'Roboto', system-ui, sans-serif;
+  }
+  code {
+    font-family:
+      Menlo,
+      Monaco,
+      Lucida Console,
+      Liberation Mono,
+      DejaVu Sans Mono,
+      Bitstream Vera Sans Mono,
+      Courier New,
+      monospace;
+  }
+</style>
+```

@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { DeterminantCalculator } from '../components/DeterminantCalculator';
+import FAQ from '../components/FAQ.astro';
+
+const title = "Matrix Determinant Calculator";
+const description = "Calculate matrix determinants easily with our interactive calculator. Supports 2x2, 3x3, and 4x4 matrices with step-by-step visualization.";
+
+const faqs = [
+  {
+    question: "What is a matrix determinant?",
+    answer: "A matrix determinant is a scalar value calculated from a square matrix that provides important information about the matrix's properties. It tells us whether the matrix is invertible, helps solve systems of linear equations, and is used in various mathematical and real-world applications."
+  },
+  {
+    question: "How do I calculate a 2x2 matrix determinant?",
+    answer: "For a 2x2 matrix [[a b], [c d]], the determinant is calculated as ad - bc. This is also known as the cross-multiplication method, where you multiply the elements on the main diagonal and subtract the product of the elements on the other diagonal."
+  },
+  {
+    question: "What does it mean if a determinant is zero?",
+    answer: "If a matrix's determinant is zero, the matrix is singular (non-invertible). This means the matrix equations involving this matrix either have no solution or infinitely many solutions. In geometric terms, it indicates that the transformation represented by the matrix reduces the dimension of the space."
+  },
+  {
+    question: "Can I calculate determinants of non-square matrices?",
+    answer: "No, determinants can only be calculated for square matrices (matrices with the same number of rows and columns). Non-square matrices do not have determinants, though they have other important properties that can be analyzed using different methods."
+  },
+  {
+    question: "Why are determinants important in computer graphics?",
+    answer: "Determinants are crucial in computer graphics for determining orientation, calculating areas and volumes, checking if points are collinear, and performing transformations. They're particularly important in 3D graphics for calculating normal vectors and handling coordinate transformations."
+  },
+  {
+    question: "How does this calculator handle larger matrices?",
+    answer: "Our calculator efficiently computes determinants for matrices up to 4x4 using optimized algorithms. For 3x3 and 4x4 matrices, it employs methods like cofactor expansion and provides step-by-step visualization of the calculation process."
+  },
+  {
+    question: "What are the applications of matrix determinants?",
+    answer: "Matrix determinants have numerous applications including solving systems of linear equations, finding inverse matrices, calculating areas and volumes, analyzing linear transformations, computer graphics, quantum mechanics, and various engineering applications."
+  },
+  {
+    question: "How accurate are the calculations?",
+    answer: "Our calculator uses high-precision JavaScript arithmetic to ensure accurate results. For most practical applications, the results are accurate to at least 10 decimal places. The step-by-step visualization helps users verify the calculation process."
+  }
+];
+---
+
+<Layout title={title} description={description}>
+  <main class="min-h-screen">
+    <DeterminantCalculator client:load />
+    <FAQ faqs={faqs} />
+  </main>
+</Layout>

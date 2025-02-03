@@ -1,0 +1,65 @@
+---
+interface Props {
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
+}
+
+const { headings } = Astro.props;
+---
+
+<nav class="toc" aria-label="Table of Contents">
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold text-primary-800 mb-4">Table of Contents</h2>
+    <ul class="space-y-3">
+      {headings.map((heading) => (
+        <li class={`ml-${(heading.depth - 1) * 4}`}>
+          <a
+            href={`#${heading.slug}`}
+            class="text-primary-600 hover:text-primary-800 transition-colors block"
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .toc {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
+
+  /* Scrollbar styling */
+  .toc::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .toc::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+
+  .toc::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 3px;
+  }
+
+  .toc::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+
+  /* Indentation for different heading levels */
+  .ml-1 { margin-left: 0.5rem; }
+  .ml-2 { margin-left: 1rem; }
+  .ml-3 { margin-left: 1.5rem; }
+  .ml-4 { margin-left: 2rem; }
+  .ml-5 { margin-left: 2.5rem; }
+  .ml-6 { margin-left: 3rem; }
+</style>

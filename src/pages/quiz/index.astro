@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Quiz } from '../../components/Quiz';
+
+const title = "Matrix Mathematics Quiz";
+const description = "Test your knowledge of matrix mathematics with our interactive quiz covering determinants, eigenvalues, and more.";
+---
+
+<Layout title={title} description={description}>
+  <Quiz client:load />
+</Layout>

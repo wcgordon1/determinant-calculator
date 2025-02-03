@@ -1,0 +1,22 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { BlogSearch } from '../../components/BlogSearch';
+
+const title = "Matrix Mathematics Blog";
+const description = "Explore articles about matrix mathematics, determinants, linear algebra, and their applications in computer graphics and engineering.";
+
+const posts = await Astro.glob('./*.md');
+---
+
+<Layout title={title} description={description}>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+      <h1 class="text-4xl font-bold text-primary-800 mb-4">{title}</h1>
+      <p class="text-lg text-gray-600">{description}</p>
+    </div>
+    
+    <div class="grid grid-cols-1 gap-8">
+      <BlogSearch client:load posts={posts} />
+    </div>
+  </main>
+</Layout>
