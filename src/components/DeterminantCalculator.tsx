@@ -3,7 +3,11 @@ import { det } from 'mathjs';
 import { MatrixInput } from './MatrixInput';
 import { ResultDisplay } from './ResultDisplay';
 
-export const DeterminantCalculator: React.FC = () => {
+interface Props {
+  // ... your props types
+}
+
+export function DeterminantCalculator(props: Props) {
   const [size, setSize] = useState(2);
   const [result, setResult] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -128,4 +132,4 @@ export const DeterminantCalculator: React.FC = () => {
       )}
     </div>
   );
-};
+}
