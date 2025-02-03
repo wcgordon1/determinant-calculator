@@ -9,17 +9,17 @@ interface Props {
 import Header from '../components/Header.astro';
 
 const { 
-  title, 
+  title = '',
   description = "A powerful matrix determinant calculator with step-by-step visualization. Calculate determinants for 2x2, 3x3, and 4x4 matrices.",
   canonicalURL = Astro.url.pathname,
   type = 'website'
 } = Astro.props;
 
 // Ensure title is not too long (60 chars max)
-const metaTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
+const metaTitle = title?.length > 60 ? title.substring(0, 57) + '...' : title;
 
 // Ensure description is not too long (160 chars max)
-const metaDescription = description.length > 160 ? description.substring(0, 157) + '...' : description;
+const metaDescription = description?.length > 160 ? description.substring(0, 157) + '...' : description;
 
 // Base URL for the site (fallback to localhost in development)
 const siteURL = Astro.site?.origin || 'http://localhost:4321';
@@ -166,4 +166,3 @@ const footerLinks = [
       monospace;
   }
 </style>
-```

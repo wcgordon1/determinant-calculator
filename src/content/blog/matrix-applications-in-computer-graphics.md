@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/BlogPost.astro
 title: Matrix Applications in Computer Graphics
 description: Discover how matrices power modern computer graphics, from 2D transformations to 3D rendering.
 date: 2024-03-16

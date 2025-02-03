@@ -1,0 +1,54 @@
+---
+interface ContentItem {
+  slug: string;
+  data: {
+    title: string;
+    description: string;
+    date: Date;
+    tags?: string[];
+  };
+}
+
+interface Props {
+  items: ContentItem[];
+  baseUrl: 'blog' | 'guides';
+}
+
+const { items, baseUrl } = Astro.props;
+import { formatDate } from '../utils/dateFormatter';
+---
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {items.map(item => (
+    <a 
+      href={`/${baseUrl}/${item.slug}`}
+      class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+    >
+      <article class="p-6">
+        <h2 class="text-xl font-bold text-primary-800 group-hover:text-primary-600 mb-2 line-clamp-2">
+          {item.data.title}
+        </h2>
+        <p class="text-gray-600 mb-4 line-clamp-2">
+          {item.data.description}
+        </p>
+        <div class="flex items-center justify-between">
+          <time class="text-sm text-primary-600 font-medium">
+            {formatDate(item.data.date)}
+          </time>
+          {item.data.tags && (
+            <div class="flex gap-2">
+              {item.data.tags.slice(0, 2).map(tag => (
+                <span class="text-xs bg-primary-50 text-primary-700 px-2 py-1 rounded-full">
+                  {tag}
+                </span>
+              ))}
+              {item.data.tags.length > 2 && (
+                <span class="text-xs text-primary-600">+{item.data.tags.length - 2}</span>
+              )}
+            </div>
+          )}
+        </div>
+      </article>
+    </a>
+  ))}
+</div> 

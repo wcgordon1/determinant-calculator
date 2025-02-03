@@ -1,11 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import ContentGrid from '../../components/ContentGrid.astro';
 import { BlogSearch } from '../../components/BlogSearch';
 
+const guides = await getCollection('guides');
+const sortedGuides = guides
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const title = "Matrix Calculation Guides";
-const description = "Step-by-step guides for matrix calculations, including determinants, eigenvalues, and transformations. Learn how to solve complex matrix problems efficiently.";
-
-const posts = await Astro.glob('./*.md');
+const description = "Step-by-step guides for matrix calculations, including determinants, eigenvalues, and transformations.";
 ---
 
 <Layout title={title} description={description}>
@@ -14,6 +17,15 @@ const posts = await Astro.glob('./*.md');
       <h1 class="text-4xl font-bold text-primary-800 mb-4">{title}</h1>
       <p class="text-lg text-gray-600">{description}</p>
     </div>
-    <BlogSearch client:load posts={posts} />
+    
+    <BlogSearch client:load posts={guides.map(guide => ({
+      ...guide.data,
+      slug: guide.slug,
+      url: `/guides/${guide.slug}`
+    }))} />
+    
+    <div class="mt-8">
+      <ContentGrid items={sortedGuides} baseUrl="guides" />
+    </div>
   </main>
 </Layout>

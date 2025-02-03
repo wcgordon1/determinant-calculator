@@ -1,11 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import ContentGrid from '../../components/ContentGrid.astro';
 import { BlogSearch } from '../../components/BlogSearch';
 
+const posts = await getCollection('blog');
+const sortedPosts = posts
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 const title = "Matrix Mathematics Blog";
-const description = "Explore articles about matrix mathematics, determinants, linear algebra, and their applications in computer graphics and engineering.";
-
-const posts = await Astro.glob('./*.md');
+const description = "Explore articles about matrix mathematics, determinants, linear algebra, and their applications.";
 ---
 
 <Layout title={title} description={description}>
@@ -15,8 +18,14 @@ const posts = await Astro.glob('./*.md');
       <p class="text-lg text-gray-600">{description}</p>
     </div>
     
-    <div class="grid grid-cols-1 gap-8">
-      <BlogSearch client:load posts={posts} />
+    <BlogSearch client:load posts={posts.map(post => ({
+      ...post.data,
+      slug: post.slug,
+      url: `/blog/${post.slug}`
+    }))} />
+    
+    <div class="mt-8">
+      <ContentGrid items={sortedPosts} baseUrl="blog" />
     </div>
   </main>
 </Layout>

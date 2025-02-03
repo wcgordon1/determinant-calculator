@@ -1,31 +1,15 @@
 ---
-layout: ../../layouts/GuidePost.astro
-title: How to Calculate a 2x2 Matrix Determinant
-description: A step-by-step guide to calculating the determinant of a 2x2 matrix using the cross-multiplication method.
-date: 2024-03-18
-tags: ["determinants", "2x2-matrix", "basic-calculations", "linear-algebra"]
-equation: "det([[a,b],[c,d]]) = ad - bc"
-steps: [
-  {
-    name: "Identify Matrix Elements",
-    text: "Label the elements of your 2x2 matrix: [[a,b],[c,d]]"
-  },
-  {
-    name: "Multiply Main Diagonal",
-    text: "Multiply the elements on the main diagonal (top-left to bottom-right): a × d"
-  },
-  {
-    name: "Multiply Secondary Diagonal",
-    text: "Multiply the elements on the secondary diagonal (top-right to bottom-left): b × c"
-  },
-  {
-    name: "Calculate Final Result",
-    text: "Subtract the secondary diagonal product from the main diagonal product: ad - bc"
-  }
-]
+title: "Calculating 2x2 Determinant"
+description: "Learn how to calculate the determinant of a 2x2 matrix step by step"
+date: 2024-03-12
+tags: ["linear-algebra", "determinants", "matrices"]
+steps:
+  - name: "Step 1"
+    text: "Identify the elements"
+  - name: "Step 2"
+    text: "Apply the formula"
+equation: "det(A) = ad - bc"
 ---
-
-# Calculating a 2x2 Matrix Determinant
 
 The determinant of a 2x2 matrix is one of the fundamental calculations in linear algebra. Here's how to do it step by step.
 

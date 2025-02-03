@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
-import react from '@astrojs/react';
+import mdx from '@astrojs/mdx';
 
 export default defineConfig({
   site: 'https://determinantcalculator.com', // Replace with your actual domain
@@ -9,6 +9,6 @@ export default defineConfig({
   integrations: [
     tailwind(),
     sitemap(),
-    react()
+    mdx()
   ]
 });

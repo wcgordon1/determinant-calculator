@@ -1,46 +1,64 @@
 ---
 import Layout from './Layout.astro';
-import { getReadingTime, getRelatedPosts } from '../utils/blogHelpers';
-import RelatedPosts from '../components/RelatedPosts.astro';
+import { getReadingTime } from '../utils/blogHelpers';
+import RelatedGuides from '../components/RelatedGuides.astro';
 import SocialShare from '../components/SocialShare.astro';
-import TagList from '../components/TagList.astro';
 import { PrintButton } from '../components/PrintButton';
 import { formatDate } from '../utils/dateFormatter';
 import TableOfContents from '../components/TableOfContents.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
 
-const { frontmatter, rawContent } = Astro.props;
-const posts = await Astro.glob('../pages/guides/*.md');
-const readingTime = getReadingTime(rawContent());
-const relatedPosts = getRelatedPosts({ frontmatter, url: Astro.url.pathname, rawContent }, posts);
+interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    date: Date;
+    tags?: string[];
+    steps?: Array<{
+      name: string;
+      text: string;
+      image?: string;
+    }>;
+    equation?: string;
+  };
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
+}
 
-const formattedDate = formatDate(frontmatter.date);
+const { frontmatter, headings } = Astro.props;
+const { title, description, date, tags, steps = [], equation } = frontmatter;
+const formattedDate = formatDate(date);
+
+// Get related guides from collection instead of glob
+const allGuides = await getCollection('guides');
+const relatedGuides = allGuides
+  .filter(guide => 
+    guide.slug !== Astro.url.pathname.split('/').pop() && 
+    guide.data.tags?.some(tag => tags?.includes(tag))
+  )
+  .slice(0, 3);
+
+const readingTime = getReadingTime(description || '');
 
 // Generate breadcrumb items
 const breadcrumbItems = [
   { name: 'Home', href: '/' },
   { name: 'Guides', href: '/guides' },
-  { name: frontmatter.title, href: Astro.url.pathname }
+  { name: title, href: Astro.url.pathname }
 ];
-
-// Extract headings from content
-const headings = rawContent()
-  .split('\n')
-  .filter(line => line.startsWith('#'))
-  .map(line => ({
-    depth: line.match(/^#+/)[0].length,
-    text: line.replace(/^#+\s+/, ''),
-    slug: line.replace(/^#+\s+/, '').toLowerCase().replace(/[^\w]+/g, '-')
-  }));
 
 // HowTo Schema for calculation guides
 const howToSchema = {
   "@context": "https://schema.org",
   "@type": "HowTo",
-  "name": frontmatter.title,
-  "description": frontmatter.description,
+  "name": title,
+  "description": description,
   "totalTime": `PT${Math.ceil(parseInt(readingTime))}M`,
-  "step": frontmatter.steps.map((step: any, index: number) => ({
+  "step": steps.map((step, index) => ({
     "@type": "HowToStep",
     "position": index + 1,
     "name": step.name,
@@ -53,18 +71,18 @@ const howToSchema = {
 const mathSchema = {
   "@context": "https://schema.org",
   "@type": "MathSolver",
-  "abstract": frontmatter.title,
+  "abstract": title,
   "educationalLevel": "University",
   "mathExpression": {
     "@type": "SolveMathAction",
-    "math": frontmatter.equation
+    "math": equation
   }
 };
 ---
 
 <Layout 
-  title={frontmatter.title}
-  description={frontmatter.description}
+  title={title}
+  description={description}
   canonicalURL={Astro.url.pathname}
   type="article"
 >
@@ -78,16 +96,24 @@ const mathSchema = {
       <div class="bg-white rounded-xl shadow-lg p-8">
         <div id="guide-content">
           <header class="mb-8 border-b border-primary-100 pb-8">
-            <h1 class="text-4xl font-bold text-primary-800 mb-4">{frontmatter.title}</h1>
-            <p class="text-lg text-gray-600 mb-4">{frontmatter.description}</p>
+            <h1 class="text-4xl font-bold text-primary-800 mb-4">{title}</h1>
+            <p class="text-lg text-gray-600 mb-4">{description}</p>
             <div class="flex items-center text-sm text-primary-600 font-medium space-x-4">
               <time>{formattedDate}</time>
               <span>•</span>
               <span>{readingTime}</span>
             </div>
-            <TagList tags={frontmatter.tags} />
+            {tags && (
+              <div class="flex gap-2 mb-8">
+                {tags.map(tag => (
+                  <span class="bg-primary-100 text-primary-800 text-sm px-2 py-1 rounded">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
             <div class="mt-4">
-              <PrintButton client:load contentId="guide-content" title={frontmatter.title} />
+              <PrintButton client:load contentId="guide-content" title={title} />
             </div>
           </header>
           <div class="prose prose-lg prose-primary max-w-none">
@@ -97,8 +123,8 @@ const mathSchema = {
         <div class="no-print">
           <SocialShare 
             url={Astro.url.href}
-            title={frontmatter.title}
-            description={frontmatter.description}
+            title={title}
+            description={description}
           />
         </div>
       </div>
@@ -109,7 +135,7 @@ const mathSchema = {
     </div>
     
     <div class="no-print">
-      <RelatedPosts posts={relatedPosts} />
+      <RelatedGuides posts={relatedGuides} />
     </div>
   </article>
 </Layout>

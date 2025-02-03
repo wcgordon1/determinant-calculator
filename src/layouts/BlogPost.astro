@@ -1,123 +1,108 @@
 ---
 import Layout from './Layout.astro';
-import { getReadingTime, getRelatedPosts } from '../utils/blogHelpers';
-import RelatedPosts from '../components/RelatedPosts.astro';
-import SocialShare from '../components/SocialShare.astro';
-import TagList from '../components/TagList.astro';
-import { PrintButton } from '../components/PrintButton';
+import { getReadingTime } from '../utils/blogHelpers';
 import { formatDate } from '../utils/dateFormatter';
-import Breadcrumbs from '../components/Breadcrumbs.astro';
 import TableOfContents from '../components/TableOfContents.astro';
+import SocialShare from '../components/SocialShare.astro';
+import { PrintButton } from '../components/PrintButton';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+import RelatedPosts from '../components/RelatedPosts.astro';
 
-const { frontmatter, rawContent } = Astro.props;
-const posts = await Astro.glob('../pages/blog/*.md');
-const readingTime = getReadingTime(rawContent());
-const relatedPosts = getRelatedPosts({ frontmatter, url: Astro.url.pathname, rawContent }, posts);
+interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    date: Date;
+    tags?: string[];
+  };
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
+}
 
-const formattedDate = formatDate(frontmatter.date);
+const { frontmatter, headings } = Astro.props;
+const { title, description, date, tags } = frontmatter;
+const formattedDate = formatDate(date);
 
 // Generate breadcrumb items
 const breadcrumbItems = [
   { name: 'Home', href: '/' },
   { name: 'Blog', href: '/blog' },
-  { name: frontmatter.title, href: Astro.url.pathname }
+  { name: title, href: Astro.url.pathname }
 ];
- 
-// Extract headings from content - simplified approach
-const headings = rawContent()
-  .split('\n')
-  .filter(line => line.startsWith('#'))
-  .map(line => ({
-    depth: line.match(/^#+/)[0].length,
-    text: line.replace(/^#+\s+/, ''),
-    slug: line.replace(/^#+\s+/, '').toLowerCase().replace(/[^\w]+/g, '-')
-  }));
 
-// Article schema
-const articleSchema = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": frontmatter.title,
-  "description": frontmatter.description,
-  "datePublished": frontmatter.date,
-  "dateModified": frontmatter.date,
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": Astro.url.pathname
-  },
-  "author": {
-    "@type": "Person",
-    "name": "Matrix Mathematics Team"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Matrix Calculator",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "/favicon.png"
-    }
-  },
-  "keywords": frontmatter.tags?.join(", ") || "",
-  "wordCount": rawContent().split(/\s+/).length,
-  "timeRequired": `PT${Math.ceil(parseInt(readingTime))}M`,
-  "articleSection": "Mathematics",
-  "inLanguage": "en-US"
-};
+const readingTime = getReadingTime(description || '');
+
+// Get related posts from collection
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter(post => 
+    post.slug !== Astro.url.pathname.split('/').pop() && 
+    post.data.tags?.some(tag => tags?.includes(tag))
+  )
+  .slice(0, 3);
 ---
 
-<Layout 
-  title={frontmatter.title}
-  description={frontmatter.description}
-  canonicalURL={Astro.url.pathname}
-  type="article"
->
-  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
-  
+<Layout title={title} description={description}>
   <article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <Breadcrumbs items={breadcrumbItems} />
     
     <div class="lg:grid lg:grid-cols-[1fr_300px] gap-8">
       <div class="bg-white rounded-xl shadow-lg p-8">
-        <div id="article-content">
+        <div id="blog-content">
           <header class="mb-8 border-b border-primary-100 pb-8">
-            <h1 class="text-4xl font-bold text-primary-800 mb-4">{frontmatter.title}</h1>
-            <p class="text-lg text-gray-600 mb-4">{frontmatter.description}</p>
+            <h1 class="text-4xl font-bold text-primary-800 mb-4">{title}</h1>
+            <p class="text-lg text-gray-600 mb-4">{description}</p>
             <div class="flex items-center text-sm text-primary-600 font-medium space-x-4">
               <time>{formattedDate}</time>
               <span>•</span>
               <span>{readingTime}</span>
             </div>
-            {frontmatter.tags && <TagList tags={frontmatter.tags} />}
+            {tags && (
+              <div class="flex gap-2 mb-8">
+                {tags.map(tag => (
+                  <span class="bg-primary-100 text-primary-800 text-sm px-2 py-1 rounded">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
             <div class="mt-4">
-              <PrintButton client:load contentId="article-content" title={frontmatter.title} />
+              <PrintButton client:load contentId="blog-content" title={title} />
             </div>
           </header>
-          
           <div class="prose prose-lg prose-primary max-w-none">
             <slot />
           </div>
         </div>
-        <div class="no-print mt-8">
-          <SocialShare 
-            url={Astro.url.href}
-            title={frontmatter.title}
-            description={frontmatter.description}
-          />
-        </div>
       </div>
-      
+
       <aside class="hidden lg:block">
         <TableOfContents headings={headings} />
       </aside>
     </div>
-    
-    <div class="no-print">
+
+    <div class="no-print mt-8">
+      <SocialShare 
+        url={Astro.url.href}
+        title={title}
+        description={description}
+      />
       <RelatedPosts posts={relatedPosts} />
     </div>
   </article>
 </Layout>
 
 <style is:global>
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+  }
+
   /* Prose Styles */
   .prose {
     color: #374151;
@@ -272,11 +257,5 @@ const articleSchema = {
   .prose tbody td {
     vertical-align: top;
     padding: 0.5714286em;
-  }
-
-  @media print {
-    .no-print {
-      display: none !important;
-    }
   }
 </style>

@@ -11,10 +11,10 @@ export interface BlogPost {
   rawContent: () => string;
 }
 
-export const getReadingTime = (content: string): string => {
-  const stats = readingTime(content);
-  return Math.ceil(stats.minutes) + ' min read';
-};
+export function getReadingTime(content: string): string {
+  if (!content) return '0 min read';
+  return readingTime(content).text;
+}
 
 export const getRelatedPosts = (currentPost: BlogPost, allPosts: BlogPost[], limit = 3): BlogPost[] => {
   // Remove the current post from the pool

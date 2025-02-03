@@ -1,5 +1,4 @@
 ---
-layout: ../../layouts/GuidePost.astro
 title: How to Calculate a 3x3 Matrix Determinant
 description: Master the Sarrus' rule and cofactor expansion methods for calculating 3x3 matrix determinants with clear examples.
 date: 2024-03-18
