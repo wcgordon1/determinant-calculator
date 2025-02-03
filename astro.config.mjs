@@ -5,7 +5,7 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: 'https://determinantcalculator.com', // Replace with your actual domain
+  site: 'https://determinantcalculator.com',
   trailingSlash: 'never', // Enforce no trailing slash
   integrations: [
     tailwind(),
